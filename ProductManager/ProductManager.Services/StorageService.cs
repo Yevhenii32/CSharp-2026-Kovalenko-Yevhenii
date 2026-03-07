@@ -8,10 +8,10 @@ namespace ProductManager.Services
     public class StorageService
     {
         // Отримуємо всі склади
-        public List<Warehouse> GetAllWarehouses()
+        public IReadOnlyList<Warehouse> GetAllWarehouses()
         {
             // Повертаємо копію списку, щоб уникнути прямого втручання в оригінальну колекцію
-            return TempStorage.Warehouses.ToList();
+            return TempStorage.Warehouses.AsReadOnly();
         }
 
         // Отримуємо конкретний склад за його ідентифікатором
@@ -21,9 +21,9 @@ namespace ProductManager.Services
         }
 
         // Отримуємо всі товари, які належать до конкретного складу
-        public List<Product> GetProductsByWarehouseId(Guid warehouseId)
+        public IReadOnlyList<Product> GetProductsByWarehouseId(Guid warehouseId)
         {
-            return TempStorage.Products.Where(p => p.WarehouseId == warehouseId).ToList();
+            return TempStorage.Products.Where(p => p.WarehouseId == warehouseId).ToList().AsReadOnly();
         }
 
         // Отримуємо конкретний товар за його ідентифікатором

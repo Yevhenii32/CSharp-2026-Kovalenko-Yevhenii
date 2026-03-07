@@ -9,9 +9,9 @@ namespace ProductManager.Models
         public string Name { get; set; }
         public Location Location { get; set; }
 
-        public Warehouse(Guid id, string name, Location location)
+        public Warehouse(string name, Location location)
         {
-            Id = id;
+            Id = Guid.NewGuid();
             Name = name;
             Location = location;
         }

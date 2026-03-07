@@ -5,24 +5,33 @@ namespace ProductManager.ViewModels
 {
     public class ProductViewModel
     {
-        private readonly Product _product;
+        // Прокидаємо властивості
+        public Guid Id { get; private set; }
+        public Guid WarehouseId { get; set; }
+        public string Name { get; set; }
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
+        public ProductCategory Category { get; set; }
+        public string Description {  get; set; }
 
+        // Обчислюване поле: загальна вартість товару (ціна * кількість)
+        public decimal TotalValue => Price * Quantity;
+
+        // Конструктор для створення нового товару
+        public ProductViewModel()
+        {
+            Id = Guid.NewGuid();
+        }
         // Конструктор приймає оригінальну модель товару
         public ProductViewModel(Product product)
         {
-            _product = product;
+            Id = product.Id;
+            WarehouseId = product.WarehouseId;
+            Name = product.Name;
+            Quantity = product.Quantity;
+            Price = product.Price;
+            Category = product.Category;
+            Description = product.Description;
         }
-
-        // Прокидаємо властивості з оригінальної моделі
-        public Guid Id => _product.Id;
-        public Guid WarehouseId => _product.WarehouseId;
-        public string Name => _product.Name;
-        public int Quantity => _product.Quantity;
-        public decimal Price => _product.Price;
-        public ProductCategory Category => _product.Category;
-        public string Description => _product.Description;
-
-        // Обчислюване поле: загальна вартість товару (ціна * кількість)
-        public decimal TotalValue => _product.Price * _product.Quantity;
     }
 }

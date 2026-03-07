@@ -12,9 +12,9 @@ namespace ProductManager.Models
         public ProductCategory Category { get; set; }
         public string Description { get; set; }
 
-        public Product(Guid id, Guid warehouseId, string name, int quantity, decimal price, ProductCategory category, string description)
+        public Product(Guid warehouseId, string name, int quantity, decimal price, ProductCategory category, string description)
         {
-            Id = id;
+            Id = Guid.NewGuid();
             WarehouseId = warehouseId;
             Name = name;
             Quantity = quantity;
