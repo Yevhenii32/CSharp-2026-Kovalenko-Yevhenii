@@ -27,7 +27,7 @@ namespace ProductManager.UI
 
             // Сторінки деталей
             builder.Services.AddTransient<WarehouseDetailsPage>();
-            //builder.Services.AddTransient<ProductDetailsPage>();
+            builder.Services.AddTransient<ProductDetailsPage>();
 
             return builder.Build();
         }

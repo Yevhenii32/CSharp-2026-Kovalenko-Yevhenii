@@ -12,7 +12,7 @@ namespace ProductManager.ViewModels
         public Location Location { get; set; }
 
         public IReadOnlyList<ProductViewModel> Products { get; }
-        // Обчислюване поле: загальна вартість усіх товарів на складі 
+        // Обчислення загальна вартість усіх товарів на складі 
         public decimal TotalWarehouseValue => Products.Sum(p => p.TotalValue);
 
         // Конструктор для створення нового складу

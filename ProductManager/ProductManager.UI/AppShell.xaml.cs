@@ -10,6 +10,7 @@ namespace ProductManager.UI
 
             
             Routing.RegisterRoute(nameof(WarehouseDetailsPage), typeof(WarehouseDetailsPage));
+            Routing.RegisterRoute(nameof(ProductDetailsPage), typeof(ProductDetailsPage));
         }
     }
 }
