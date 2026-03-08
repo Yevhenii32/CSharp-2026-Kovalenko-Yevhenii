@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.UI.Pages.WarehouseDetailsPage"
+             Title="Деталі складу"
+             BackgroundColor="#E9ECEF"
+             Shell.BackgroundColor="#E9ECEF">
+
+    <Grid RowDefinitions="Auto, Auto, *" Padding="20" RowSpacing="15" MaximumWidthRequest="600" HorizontalOptions="Center">
+
+        <Frame Grid.Row="0" Margin="0" Padding="20" CornerRadius="15" HasShadow="True" BackgroundColor="White">
+            <VerticalStackLayout Spacing="5">
+                <Label Text="{Binding Name}" FontSize="22" FontAttributes="Bold" TextColor="#2C3E50" HorizontalOptions="Center"/>
+                <Label Text="{Binding Location, StringFormat='Локація: {0}'}" FontSize="16" TextColor="#7F8C8D" HorizontalOptions="Center"/>
+                <Label Text="{Binding TotalWarehouseValue, StringFormat='Загальна вартість: {0} грн'}" FontSize="16" TextColor="#0080FF" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,5,0,0"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <Label Grid.Row="1" Text="Список товарів:" FontSize="20" FontAttributes="Bold" TextColor="#2C3E50" Margin="0,10,0,0" />
+
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Products}" SelectionMode="Single">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="0" Padding="15" CornerRadius="15" HasShadow="True" BackgroundColor="#C7EBFF">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" TextColor="#2C3E50" />
+                                <Label Text="{Binding Category, StringFormat='Категорія: {0}'}" FontSize="14" TextColor="#7F8C8D" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Price, StringFormat='{0} ₴'}" FontSize="16" TextColor="#0080FF" FontAttributes="Bold" VerticalOptions="Center" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

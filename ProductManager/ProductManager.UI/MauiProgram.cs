@@ -26,7 +26,7 @@ namespace ProductManager.UI
             builder.Services.AddSingleton<WarehousesPage>();
 
             // Сторінки деталей
-            //builder.Services.AddTransient<WarehouseDetailsPage>();
+            builder.Services.AddTransient<WarehouseDetailsPage>();
             //builder.Services.AddTransient<ProductDetailsPage>();
 
             return builder.Build();

@@ -34,4 +34,21 @@ public partial class WarehousesPage : ContentPage
 
         WarehousesCollection.ItemsSource = viewModels;
     }
+    private async void WarehousesCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // Перевіряємо, чи дійсно вибрано склад
+        if (e.CurrentSelection.FirstOrDefault() is WarehouseViewModel selectedWarehouse)
+        {
+            var navigationParameter = new Dictionary<string, object>
+            {
+                { "SelectedWarehouse", selectedWarehouse }
+            };
+
+            // Переходимо на сторінку деталей. Використовуємо відносний шлях.
+            await Shell.Current.GoToAsync($"{nameof(WarehouseDetailsPage)}", navigationParameter);
+
+            // Знімаємо виділення з картки
+            WarehousesCollection.SelectedItem = null;
+        }
+    }
 }
