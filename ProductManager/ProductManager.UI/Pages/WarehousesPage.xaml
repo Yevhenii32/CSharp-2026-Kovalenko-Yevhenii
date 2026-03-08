@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProductManager.UI.Pages.WarehousesPage"
+             Title="Управління складами вашої компанії" 
+             BackgroundColor="#E9ECEF"
+             Shell.BackgroundColor="#E9ECEF">
+
+
+    <VerticalStackLayout Padding="20" Spacing="15" MaximumWidthRequest="600" HorizontalOptions="Center">
+        <Label Text="Список доступних складів" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
+
+        <CollectionView x:Name="WarehousesCollection" SelectionMode="Single">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="15" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="0" Padding="15" CornerRadius="15" HasShadow="True" BackgroundColor="#C7EBFF">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" TextColor="#2C3E50" />
+                            <Label Text="{Binding Location}" FontSize="14" TextColor="#7F8C8D" Margin="0,5,0,0" />
+                            <Label Text="{Binding TotalWarehouseValue, StringFormat='Вартість активів: {0} грн'}" FontSize="14" TextColor="#0080FF" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

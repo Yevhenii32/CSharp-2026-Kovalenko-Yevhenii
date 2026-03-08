@@ -5,7 +5,8 @@ using ProductManager.Models;
 
 namespace ProductManager.Services
 {
-    public class StorageService
+    // Додано реалізацію інтерфейсу
+    public class StorageService : IStorageService
     {
         // Отримуємо всі склади
         public IReadOnlyList<Warehouse> GetAllWarehouses()
