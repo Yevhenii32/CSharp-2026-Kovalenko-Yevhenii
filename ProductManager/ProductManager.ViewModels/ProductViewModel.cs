@@ -6,7 +6,7 @@ namespace ProductManager.ViewModels
     public class ProductViewModel
     {
         // Прокидаємо властивості
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
         public Guid WarehouseId { get; set; }
         public string Name { get; set; }
         public int Quantity { get; set; }
@@ -14,13 +14,24 @@ namespace ProductManager.ViewModels
         public ProductCategory Category { get; set; }
         public string Description {  get; set; }
 
+        // Переклад категорії для інтерфейсу 
+        public string CategoryName => Category switch
+        {
+            ProductCategory.Electronics => "Електроніка",
+            ProductCategory.Clothing => "Одяг",
+            ProductCategory.Groceries => "Продукти",
+            ProductCategory.Furniture => "Меблі",
+            ProductCategory.Tools => "Інструменти",
+            _ => "Інше"
+        };
+
         // Обчислюване поле: загальна вартість товару (ціна * кількість)
         public decimal TotalValue => Price * Quantity;
 
         // Конструктор для створення нового товару
         public ProductViewModel()
         {
-            Id = Guid.NewGuid();
+          
         }
         // Конструктор приймає оригінальну модель товару
         public ProductViewModel(Product product)

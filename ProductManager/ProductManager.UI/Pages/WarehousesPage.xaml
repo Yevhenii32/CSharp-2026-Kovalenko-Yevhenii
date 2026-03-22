@@ -20,7 +20,7 @@
                     <Frame Margin="0" Padding="15" CornerRadius="15" HasShadow="True" BackgroundColor="#C7EBFF">
                         <VerticalStackLayout>
                             <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" TextColor="#2C3E50" />
-                            <Label Text="{Binding Location}" FontSize="14" TextColor="#7F8C8D" Margin="0,5,0,0" />
+                            <Label Text="{Binding LocationName}" FontSize="14" TextColor="#7F8C8D" Margin="0,5,0,0" />
                             <Label Text="{Binding TotalWarehouseValue, StringFormat='Вартість товарів: {0} грн'}" FontSize="14" TextColor="#0080FF" FontAttributes="Bold" />
                         </VerticalStackLayout>
                     </Frame>

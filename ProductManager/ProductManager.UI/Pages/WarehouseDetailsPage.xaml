@@ -11,7 +11,7 @@
         <Frame Grid.Row="0" Margin="0" Padding="20" CornerRadius="15" HasShadow="True" BackgroundColor="White">
             <VerticalStackLayout Spacing="5">
                 <Label Text="{Binding Name}" FontSize="22" FontAttributes="Bold" TextColor="#2C3E50" HorizontalOptions="Center"/>
-                <Label Text="{Binding Location, StringFormat='Локація: {0}'}" FontSize="16" TextColor="#7F8C8D" HorizontalOptions="Center"/>
+                <Label Text="{Binding LocationName, StringFormat='Локація: {0}'}" FontSize="16" TextColor="#7F8C8D" HorizontalOptions="Center"/>
                 <Label Text="{Binding TotalWarehouseValue, StringFormat='Загальна вартість: {0} грн'}" FontSize="16" TextColor="#0080FF" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,5,0,0"/>
             </VerticalStackLayout>
         </Frame>
@@ -28,7 +28,7 @@
                         <Grid ColumnDefinitions="*, Auto">
                             <VerticalStackLayout Grid.Column="0">
                                 <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" TextColor="#2C3E50" />
-                                <Label Text="{Binding Category, StringFormat='Категорія: {0}'}" FontSize="14" TextColor="#7F8C8D" />
+                                <Label Text="{Binding CategoryName, StringFormat='Категорія: {0}'}" FontSize="14" TextColor="#7F8C8D" />
                             </VerticalStackLayout>
                             <Label Grid.Column="1" Text="{Binding Price, StringFormat='{0} ₴'}" FontSize="16" TextColor="#0080FF" FontAttributes="Bold" VerticalOptions="Center" />
                         </Grid>

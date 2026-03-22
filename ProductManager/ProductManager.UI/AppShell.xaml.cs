@@ -8,9 +8,9 @@ namespace ProductManager.UI
         {
             InitializeComponent();
 
-            
-            Routing.RegisterRoute(nameof(WarehouseDetailsPage), typeof(WarehouseDetailsPage));
-            Routing.RegisterRoute(nameof(ProductDetailsPage), typeof(ProductDetailsPage));
+
+            Routing.RegisterRoute($"{nameof(WarehousesPage)}/{nameof(WarehouseDetailsPage)}", typeof(WarehouseDetailsPage));
+            Routing.RegisterRoute($"{nameof(WarehousesPage)}/{nameof(WarehouseDetailsPage)}/{nameof(ProductDetailsPage)}", typeof(ProductDetailsPage));
         }
     }
 }

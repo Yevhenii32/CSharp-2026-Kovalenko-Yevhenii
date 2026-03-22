@@ -7,10 +7,20 @@ namespace ProductManager.ViewModels
 {
     public class WarehouseViewModel
     {
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public Location Location { get; set; }
 
+        // Переклад локації для інтерфейсу 
+        public string LocationName => Location switch
+        {
+            Location.Kyiv => "Київ",
+            Location.Lviv => "Львів",
+            Location.Kharkiv => "Харків",
+            Location.Odesa => "Одеса",
+            Location.Chernihiv => "Чернігів",
+            _ => "Невідомо"
+        };
         public IReadOnlyList<ProductViewModel> Products { get; }
         // Обчислення загальна вартість усіх товарів на складі 
         public decimal TotalWarehouseValue => Products.Sum(p => p.TotalValue);
@@ -18,7 +28,6 @@ namespace ProductManager.ViewModels
         // Конструктор для створення нового складу
         public WarehouseViewModel()
         {
-            Id = Guid.NewGuid();
             Products = new List<ProductViewModel>().AsReadOnly();
         }
         // Конструктор приймає модель складу та список моделей відображення товарів
