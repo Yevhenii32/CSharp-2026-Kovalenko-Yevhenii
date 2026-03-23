@@ -1,15 +1,15 @@
 ﻿using System;
 
-namespace ProductManager.Models
+namespace ProductManager.DBModels
 {
-    public class Warehouse
+    public class WarehouseDBModel
     {
         
         public Guid Id { get; }
         public string Name { get; set; }
         public Location Location { get; set; }
 
-        public Warehouse(string name, Location location)
+        public WarehouseDBModel(string name, Location location)
         {
             Id = Guid.NewGuid();
             Name = name;

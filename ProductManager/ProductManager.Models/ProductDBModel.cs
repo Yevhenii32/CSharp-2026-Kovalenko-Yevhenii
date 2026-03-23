@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ProductManager.Models
+namespace ProductManager.DBModels
 {
-    public class Product
+    public class ProductDBModel
     {
         public Guid Id { get; }
         public Guid WarehouseId { get; set; } 
@@ -12,7 +12,7 @@ namespace ProductManager.Models
         public ProductCategory Category { get; set; }
         public string Description { get; set; }
 
-        public Product(Guid warehouseId, string name, int quantity, decimal price, ProductCategory category, string description)
+        public ProductDBModel(Guid warehouseId, string name, int quantity, decimal price, ProductCategory category, string description)
         {
             Id = Guid.NewGuid();
             WarehouseId = warehouseId;

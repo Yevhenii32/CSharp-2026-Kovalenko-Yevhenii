@@ -1,4 +1,4 @@
-﻿namespace ProductManager.Models
+﻿namespace ProductManager.DBModels
 {
     public enum ProductCategory
     {

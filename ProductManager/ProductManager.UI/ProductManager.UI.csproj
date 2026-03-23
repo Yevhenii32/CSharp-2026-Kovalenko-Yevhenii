@@ -63,7 +63,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ProductManager.Models\ProductManager.Models.csproj" />
+		<ProjectReference Include="..\ProductManager.Models\ProductManager.DBModels.csproj" />
 		<ProjectReference Include="..\ProductManager.ViewModels\ProductManager.ViewModels.csproj" />
 		<ProjectReference Include="..\ProductManager.Services\ProductManager.Services.csproj" />
 	</ItemGroup>
