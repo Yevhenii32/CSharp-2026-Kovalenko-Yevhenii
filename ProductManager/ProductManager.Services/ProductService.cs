@@ -13,7 +13,7 @@ namespace ProductManager.Services
         {
             _productRepository = productRepository;
         }
-
+        // Перетворюємо список моделей бази даних у список DTO
         public IEnumerable<ProductListDTO> GetProductsByWarehouse(Guid warehouseId)
         {
             foreach (var product in _productRepository.GetProductsByWarehouse(warehouseId))
@@ -21,7 +21,7 @@ namespace ProductManager.Services
                 yield return new ProductListDTO(product.Id, product.Name, product.Price, product.Category);
             }
         }
-
+        // Отримуємо детальні дані про товар
         public ProductDetailsDTO GetProduct(Guid productId)
         {
             var product = _productRepository.GetProduct(productId);

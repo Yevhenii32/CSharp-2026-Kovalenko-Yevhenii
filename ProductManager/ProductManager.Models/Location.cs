@@ -1,11 +1,16 @@
-﻿namespace ProductManager.DBModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProductManager.DBModels
 {
     public enum Location
     {
+        [Display(Name = "Київ")]
         Kyiv,
+        [Display(Name = "Львів")]
         Lviv,
+        [Display(Name = "Харків")]
         Kharkiv,
-        Odesa,
-        Chernihiv
+        [Display(Name = "Одеса")]
+        Odesa
     }
 }

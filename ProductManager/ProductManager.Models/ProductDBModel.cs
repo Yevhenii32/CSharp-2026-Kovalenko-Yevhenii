@@ -12,6 +12,8 @@ namespace ProductManager.DBModels
         public ProductCategory Category { get; set; }
         public string Description { get; set; }
 
+        // Генеруємо новий ID за замовчуванням для нових об'єктів.
+        // При завантаженні з StorageContext цей ID буде перезаписаний існуючим значенням.
         public ProductDBModel(Guid warehouseId, string name, int quantity, decimal price, ProductCategory category, string description)
         {
             Id = Guid.NewGuid();

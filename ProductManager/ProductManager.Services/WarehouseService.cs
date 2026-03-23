@@ -17,6 +17,7 @@ namespace ProductManager.Services
             _productRepository = productRepository;
         }
 
+        // Формуємо список складів для головної сторінки
         public IEnumerable<WarehouseListDTO> GetAllWarehouses()
         {
             foreach (var warehouse in _warehouseRepository.GetAllWarehouses())
@@ -24,7 +25,7 @@ namespace ProductManager.Services
                 yield return new WarehouseListDTO(warehouse.Id, warehouse.Name, warehouse.Location);
             }
         }
-
+        // Формуємо детальні дані про склад
         public WarehouseDetailsDTO GetWarehouse(Guid warehouseId)
         {
             var warehouse = _warehouseRepository.GetWarehouse(warehouseId);

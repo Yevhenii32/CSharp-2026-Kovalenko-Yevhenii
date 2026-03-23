@@ -9,6 +9,7 @@ namespace ProductManager.Repository
     {
         private readonly IStorageContext _storageContext;
 
+        // Впроваджуємо сховище через конструктор
         public WarehouseRepository(IStorageContext storageContext)
         {
             _storageContext = storageContext;

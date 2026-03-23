@@ -1,11 +1,16 @@
-﻿namespace ProductManager.DBModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProductManager.DBModels
 {
     public enum ProductCategory
     {
+        [Display(Name = "Електроніка")]
         Electronics,
-        Clothing,
-        Groceries,
+        [Display(Name = "Меблі")]
         Furniture,
-        Tools
+        [Display(Name = "Продукти харчування")]
+        Groceries,
+        [Display(Name = "Одяг")]
+        Clothing
     }
 }

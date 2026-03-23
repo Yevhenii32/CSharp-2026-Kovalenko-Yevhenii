@@ -13,12 +13,12 @@ namespace ProductManager.Repository
         {
             _storageContext = storageContext;
         }
-
+        // Отримуємо товари за ідентифікатором складу
         public IEnumerable<ProductDBModel> GetProductsByWarehouse(Guid warehouseId)
         {
             return _storageContext.GetProductsByWarehouse(warehouseId);
         }
-
+        // Шукаємо конкретний товар
         public ProductDBModel GetProduct(Guid productId)
         {
             return _storageContext.GetProduct(productId);

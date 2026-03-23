@@ -3,7 +3,7 @@ using ProductManager.UI.Pages;
 using ProductManager.Storage;
 using ProductManager.Repository;
 using ProductManager.Services;
-
+using ProductManager.UI.ViewModels;
 namespace ProductManager.UI
 {
     public static class MauiProgram
@@ -34,11 +34,13 @@ namespace ProductManager.UI
             builder.Services.AddTransient<IWarehouseService, WarehouseService>();
             builder.Services.AddTransient<IProductService, ProductService>();
 
-            // еєструємо сторінки (UI)
-            // Головна сторінка зі складами
-            builder.Services.AddSingleton<WarehousesPage>();
+            // Реєструємо ViewModels 
+            builder.Services.AddTransient<WarehousesViewModel>();
+            builder.Services.AddTransient<WarehouseDetailsViewModel>();
+            builder.Services.AddTransient<ProductDetailsViewModel>();
 
-            // Сторінки деталей
+            // Реєструємо сторінки (UI)
+            builder.Services.AddSingleton<WarehousesPage>();
             builder.Services.AddTransient<WarehouseDetailsPage>();
             builder.Services.AddTransient<ProductDetailsPage>();
 
