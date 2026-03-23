@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using ProductManager.Services;
 using ProductManager.UI.Pages;
+using ProductManager.Storage;
+using ProductManager.Repository;
+using ProductManager.Services;
+
 namespace ProductManager.UI
 {
     public static class MauiProgram
@@ -19,9 +22,19 @@ namespace ProductManager.UI
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
-            // Реєструємо наш сервіс сховища 
-            builder.Services.AddSingleton<IStorageService, StorageService>();
-          
+
+            // Реєструємо шар даних (Storage) 
+            builder.Services.AddSingleton<IStorageContext, StorageContext>();
+
+            // Реєструємо шар репозиторіїв (Repository)
+            builder.Services.AddTransient<IWarehouseRepository, WarehouseRepository>();
+            builder.Services.AddTransient<IProductRepository, ProductRepository>();
+
+            // Реєструємо шар бізнес-логіки (Services)
+            builder.Services.AddTransient<IWarehouseService, WarehouseService>();
+            builder.Services.AddTransient<IProductService, ProductService>();
+
+            // еєструємо сторінки (UI)
             // Головна сторінка зі складами
             builder.Services.AddSingleton<WarehousesPage>();
 

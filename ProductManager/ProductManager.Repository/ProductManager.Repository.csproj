@@ -7,9 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ProductManager.DTOModels\ProductManager.DTOModels.csproj" />
     <ProjectReference Include="..\ProductManager.Models\ProductManager.DBModels.csproj" />
-    <ProjectReference Include="..\ProductManager.Repository\ProductManager.Repository.csproj" />
+    <ProjectReference Include="..\ProductManager.Storage\ProductManager.Storage.csproj" />
   </ItemGroup>
 
 </Project>

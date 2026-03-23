@@ -4,7 +4,7 @@ namespace ProductManager.DBModels
 {
     public class ProductDBModel
     {
-        public Guid Id { get; }
+        public Guid Id { get; set; }
         public Guid WarehouseId { get; set; } 
         public string Name { get; set; }
         public int Quantity { get; set; }
