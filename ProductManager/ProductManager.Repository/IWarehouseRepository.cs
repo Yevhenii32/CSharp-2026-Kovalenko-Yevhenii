@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ProductManager.DBModels;
 
 namespace ProductManager.Repository
 {
     public interface IWarehouseRepository
     {
-        // Отримуємо всі склади
-        IEnumerable<WarehouseDBModel> GetAllWarehouses();
-
-        // Отримуємо конкретний склад за його ID
-        WarehouseDBModel GetWarehouse(Guid warehouseId);
+        IAsyncEnumerable<WarehouseDBModel> GetAllWarehousesAsync();
+        Task<WarehouseDBModel> GetWarehouseAsync(Guid warehouseId);
+        Task AddWarehouseAsync(WarehouseDBModel warehouse);
+        Task UpdateWarehouseAsync(WarehouseDBModel warehouse);
+        Task DeleteWarehouseAsync(Guid warehouseId);
     }
 }

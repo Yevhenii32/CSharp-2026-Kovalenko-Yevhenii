@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ProductManager.DBModels;
 using ProductManager.Storage;
 
@@ -13,15 +14,11 @@ namespace ProductManager.Repository
         {
             _storageContext = storageContext;
         }
-        // Отримуємо товари за ідентифікатором складу
-        public IEnumerable<ProductDBModel> GetProductsByWarehouse(Guid warehouseId)
-        {
-            return _storageContext.GetProductsByWarehouse(warehouseId);
-        }
-        // Шукаємо конкретний товар
-        public ProductDBModel GetProduct(Guid productId)
-        {
-            return _storageContext.GetProduct(productId);
-        }
+
+        public Task<IEnumerable<ProductDBModel>> GetProductsByWarehouseAsync(Guid warehouseId) => _storageContext.GetProductsByWarehouseAsync(warehouseId);
+        public Task<ProductDBModel> GetProductAsync(Guid productId) => _storageContext.GetProductAsync(productId);
+        public Task AddProductAsync(ProductDBModel product) => _storageContext.AddProductAsync(product);
+        public Task UpdateProductAsync(ProductDBModel product) => _storageContext.UpdateProductAsync(product);
+        public Task DeleteProductAsync(Guid productId) => _storageContext.DeleteProductAsync(productId);
     }
 }

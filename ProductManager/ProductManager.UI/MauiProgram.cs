@@ -24,7 +24,7 @@ namespace ProductManager.UI
 #endif
 
             // Реєструємо шар даних (Storage) 
-            builder.Services.AddSingleton<IStorageContext, StorageContext>();
+            builder.Services.AddSingleton<IStorageContext, SQLiteStorageContext>();
 
             // Реєструємо шар репозиторіїв (Repository)
             builder.Services.AddTransient<IWarehouseRepository, WarehouseRepository>();

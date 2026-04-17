@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ProductManager.DTOModels.Warehouse;
+using ProductManager.DBModels;
 
 namespace ProductManager.Services
 {
     public interface IWarehouseService
     {
-        // Повертаємо список легких моделей для головного екрана
-        IEnumerable<WarehouseListDTO> GetAllWarehouses();
-        // Повертаємо повну інформацію про склад разом з його товарами
-        WarehouseDetailsDTO GetWarehouse(Guid warehouseId);
+        IAsyncEnumerable<WarehouseListDTO> GetAllWarehousesAsync();
+        Task<WarehouseDetailsDTO> GetWarehouseAsync(Guid warehouseId);
+
+        Task CreateWarehouseAsync(string name, Location location);
+        Task UpdateWarehouseAsync(Guid id, string name, Location location);
+        Task DeleteWarehouseAsync(Guid warehouseId);
     }
 }

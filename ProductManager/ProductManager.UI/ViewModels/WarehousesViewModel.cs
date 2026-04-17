@@ -1,64 +1,114 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls;
-using ProductManager.Services;
 using ProductManager.DTOModels.Warehouse;
+using ProductManager.Services;
 using ProductManager.UI.Pages;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace ProductManager.UI.ViewModels
 {
-    public class WarehousesViewModel : INotifyPropertyChanged
+    // Модель представлення для головної сторінки зі списком усіх складів.
+    public partial class WarehousesViewModel : BaseViewModel
     {
         private readonly IWarehouseService _warehouseService;
-
-        // Колекція складів, яка автоматично оновлює список на екрані
-        public ObservableCollection<WarehouseListDTO> Warehouses { get; } = new();
-
-        private WarehouseListDTO _selectedWarehouse;
-        public WarehouseListDTO SelectedWarehouse
-        {
-            get => _selectedWarehouse;
-            set
-            {
-                _selectedWarehouse = value;
-                OnPropertyChanged();
-
-                // Якщо користувач вибрав склад — переходимо на сторінку деталей
-                if (value != null)
-                {
-                    NavigateToDetails(value);
-                    SelectedWarehouse = null;
-                }
-            }
-        }
+       
+        // Колекція складів для відображення в інтерфейсі користувача.
+        [ObservableProperty]
+        private ObservableCollection<WarehouseListDTO> _warehouses = new();
+        
+        //Поточний вибраний склад зі списку.
+        [ObservableProperty]
+        private WarehouseListDTO _currentWarehouse;
 
         public WarehousesViewModel(IWarehouseService warehouseService)
         {
             _warehouseService = warehouseService;
-            LoadWarehouses();
+            // Завантажуємо дані при створенні ViewModel
+            _ = RefreshData();
         }
-
-        // Метод для початкового завантаження даних із сервісу
-        private void LoadWarehouses()
+        // Асинхронне завантаження списку складів з бази даних.
+        [RelayCommand]
+        internal async Task RefreshData()
         {
-            Warehouses.Clear();
-            foreach (var w in _warehouseService.GetAllWarehouses())
+            IsBusy = true;
+            try
             {
-                Warehouses.Add(w);
+                Warehouses.Clear();
+                await foreach (var warehouse in _warehouseService.GetAllWarehousesAsync())
+                {
+                    Warehouses.Add(warehouse);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", $"Не вдалося завантажити склади: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        // Виконує перехід на сторінку деталей вибраного складу.
+        [RelayCommand]
+        private async Task GotoWarehouseDetails(WarehouseListDTO warehouse)
+        {
+            if (warehouse == null) return;
+            IsBusy = true;
+            try
+            {
+                await Shell.Current.GoToAsync($"{nameof(WarehouseDetailsPage)}", new Dictionary<string, object> { { "WarehouseId", warehouse.Id } });
+                CurrentWarehouse = null; // Скидаємо виділення після переходу
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", $"Помилка навігації: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 
-        // Логіка навігації до деталей складу
-        private async void NavigateToDetails(WarehouseListDTO warehouse)
+        // Викликає діалогове вікно для створення нового складу та зберігає його в базу
+        [RelayCommand]
+        private async Task AddWarehouse()
         {
-            var parameters = new Dictionary<string, object> { { "WarehouseId", warehouse.Id } };
-            await Shell.Current.GoToAsync(nameof(WarehouseDetailsPage), parameters);
+            try
+            {
+                string name = await Application.Current.MainPage.DisplayPromptAsync("Новий склад", "Введіть назву:");
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    await _warehouseService.CreateWarehouseAsync(name, ProductManager.DBModels.Location.Kyiv);
+                    await RefreshData();
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", $"Помилка створення: {ex.Message}", "OK");
+            }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        // Видаляє вибраний склад та всі пов'язані з ним товари після підтвердження.
+        [RelayCommand]
+        private async Task DeleteWarehouse(WarehouseListDTO warehouse)
+        {
+            if (warehouse == null) return;
+            try
+            {
+                if (await Shell.Current.DisplayAlert("Підтвердження", $"Видалити {warehouse.Name} та всі товари?", "Так", "Ні"))
+                {
+                    await _warehouseService.DeleteWarehouseAsync(warehouse.Id);
+                    Warehouses.Remove(warehouse);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", $"Помилка видалення: {ex.Message}", "OK");
+            }
+        }
     }
 }

@@ -1,73 +1,125 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls;
-using ProductManager.Services;
-using ProductManager.DTOModels.Warehouse;
 using ProductManager.DTOModels.Product;
+using ProductManager.DTOModels.Warehouse;
+using ProductManager.Services;
 using ProductManager.UI.Pages;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace ProductManager.UI.ViewModels
 {
-    [QueryProperty(nameof(WarehouseId), "WarehouseId")]
-    public class WarehouseDetailsViewModel : INotifyPropertyChanged
+    // Відображає інформацію про склад та керує списком товарів у ньому.
+    public partial class WarehouseDetailsViewModel : BaseViewModel, IQueryAttributable
     {
         private readonly IWarehouseService _warehouseService;
+        private readonly IProductService _productService;
 
         private Guid _warehouseId;
-        public Guid WarehouseId
-        {
-            get => _warehouseId;
-            set
-            {
-                _warehouseId = value;
-                // Як тільки отримали ID — завантажуємо дані через сервіс
-                WarehouseDetails = _warehouseService.GetWarehouse(value);
-            }
-        }
 
-        private WarehouseDetailsDTO _warehouseDetails;
-        public WarehouseDetailsDTO WarehouseDetails
-        {
-            get => _warehouseDetails;
-            set
-            {
-                _warehouseDetails = value;
-                OnPropertyChanged();
-            }
-        }
+        // Детальна інформація про поточний склад.
+        [ObservableProperty]
+        private WarehouseDetailsDTO _currentWarehouse;
 
-        private ProductListDTO _selectedProduct;
-        public ProductListDTO SelectedProduct
-        {
-            get => _selectedProduct;
-            set
-            {
-                _selectedProduct = value;
-                OnPropertyChanged();
-                // Якщо вибрано товар то переходимо до його детального опису
-                if (value != null)
-                {
-                    NavigateToProduct(value);
-                    SelectedProduct = null;
-                }
-            }
-        }
+        // Колекція товарів, що належать до цього складу.
+        [ObservableProperty]
+        private ObservableCollection<ProductListDTO> _products;
 
-        public WarehouseDetailsViewModel(IWarehouseService warehouseService)
+        public WarehouseDetailsViewModel(IWarehouseService warehouseService, IProductService productService)
         {
             _warehouseService = warehouseService;
+            _productService = productService;
         }
 
-        private async void NavigateToProduct(ProductListDTO product)
+        // Приймає параметри навігації при переході на сторінку.
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            var parameters = new Dictionary<string, object> { { "ProductId", product.Id } };
-            await Shell.Current.GoToAsync(nameof(ProductDetailsPage), parameters);
+            if (query.TryGetValue("WarehouseId", out var idValue) && idValue is Guid id)
+            {
+                _warehouseId = id;
+                _ = RefreshData();
+            }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        // Оновлення даних про склад та список його товарів з бази даних.
+        [RelayCommand]
+        internal async Task RefreshData()
+        {
+            IsBusy = true;
+            try
+            {
+                CurrentWarehouse = await _warehouseService.GetWarehouseAsync(_warehouseId) ?? throw new Exception("Склад не знайдено.");
+                Products = new ObservableCollection<ProductListDTO>(await _productService.GetProductsByWarehouseAsync(_warehouseId));
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", $"Помилка завантаження деталей: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        // Виконує навігацію до сторінки деталей конкретного товару.
+        [RelayCommand]
+        private async Task GotoProductDetails(ProductListDTO product)
+        {
+            if (product == null) return;
+            IsBusy = true;
+            try
+            {
+                await Shell.Current.GoToAsync($"{nameof(ProductDetailsPage)}", new Dictionary<string, object> { { "ProductId", product.Id } });
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", $"Помилка навігації: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        // Додає новий товар до поточного складу.
+        [RelayCommand]
+        private async Task AddProduct()
+        {
+            try
+            {
+                string name = await Application.Current.MainPage.DisplayPromptAsync("Новий товар", "Назва товару:");
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    await _productService.CreateProductAsync(_warehouseId, name, 1, 100m, ProductManager.DBModels.ProductCategory.Electronics, "Без опису");
+                    await RefreshData();
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", $"Помилка створення: {ex.Message}", "OK");
+            }
+        }
+
+        // Видаляє товар зі складу після підтвердження користувача.
+        [RelayCommand]
+        private async Task DeleteProduct(ProductListDTO product)
+        {
+            if (product == null) return;
+            try
+            {
+                if (await Shell.Current.DisplayAlert("Підтвердження", $"Видалити {product.Name}?", "Так", "Ні"))
+                {
+                    await _productService.DeleteProductAsync(product.Id);
+                    Products.Remove(product);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", $"Помилка видалення: {ex.Message}", "OK");
+            }
+        }
     }
 }

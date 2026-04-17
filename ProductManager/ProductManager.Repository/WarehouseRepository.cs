@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ProductManager.DBModels;
 using ProductManager.Storage;
 
@@ -9,20 +10,15 @@ namespace ProductManager.Repository
     {
         private readonly IStorageContext _storageContext;
 
-        // Впроваджуємо сховище через конструктор
         public WarehouseRepository(IStorageContext storageContext)
         {
             _storageContext = storageContext;
         }
 
-        public IEnumerable<WarehouseDBModel> GetAllWarehouses()
-        {
-            return _storageContext.GetAllWarehouses();
-        }
-
-        public WarehouseDBModel GetWarehouse(Guid warehouseId)
-        {
-            return _storageContext.GetWarehouse(warehouseId);
-        }
+        public IAsyncEnumerable<WarehouseDBModel> GetAllWarehousesAsync() => _storageContext.GetAllWarehousesAsync();
+        public Task<WarehouseDBModel> GetWarehouseAsync(Guid warehouseId) => _storageContext.GetWarehouseAsync(warehouseId);
+        public Task AddWarehouseAsync(WarehouseDBModel warehouse) => _storageContext.AddWarehouseAsync(warehouse);
+        public Task UpdateWarehouseAsync(WarehouseDBModel warehouse) => _storageContext.UpdateWarehouseAsync(warehouse);
+        public Task DeleteWarehouseAsync(Guid warehouseId) => _storageContext.DeleteWarehouseAsync(warehouseId);
     }
 }

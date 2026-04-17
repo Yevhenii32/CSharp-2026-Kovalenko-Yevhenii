@@ -1,47 +1,56 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls;
-using ProductManager.Services;
 using ProductManager.DTOModels.Product;
+using ProductManager.Services;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ProductManager.UI.ViewModels
 {
-    [QueryProperty(nameof(ProductId), "ProductId")]
-    public class ProductDetailsViewModel : INotifyPropertyChanged
+    // Модель представлення для сторінки деталей товару.
+    public partial class ProductDetailsViewModel : BaseViewModel, IQueryAttributable
     {
         private readonly IProductService _productService;
-
         private Guid _productId;
-        public Guid ProductId
-        {
-            get => _productId;
-            set
-            {
-                _productId = value;
-                // Завантажуємо повну інформацію про товар за отриманим ID
-                ProductDetails = _productService.GetProduct(value);
-            }
-        }
 
-        private ProductDetailsDTO _productDetails;
-        public ProductDetailsDTO ProductDetails
-        {
-            get => _productDetails;
-            set
-            {
-                _productDetails = value;
-                OnPropertyChanged();
-            }
-        }
+        // Детальна інформація про вибраний товар.
+        [ObservableProperty]
+        private ProductDetailsDTO _currentProduct;
 
         public ProductDetailsViewModel(IProductService productService)
         {
             _productService = productService;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        // Приймає ідентифікатор товару при навігації на цю сторінку.
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("ProductId", out var idValue) && idValue is Guid id)
+            {
+                _productId = id;
+                _ = RefreshData();
+            }
+        }
+
+        // Завантажує повну інформацію про товар з бази даних.
+        [RelayCommand]
+        internal async Task RefreshData()
+        {
+            IsBusy = true;
+            try
+            {
+                CurrentProduct = await _productService.GetProductAsync(_productId) ?? throw new Exception("Товар не знайдено.");
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", $"Помилка завантаження товару: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
     }
 }
