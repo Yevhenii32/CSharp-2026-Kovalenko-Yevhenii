@@ -2,35 +2,67 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:conv="clr-namespace:ProductManager.UI.Converters"
+             xmlns:models="clr-namespace:ProductManager.DTOModels.Warehouse;assembly=ProductManager.DTOModels"
+             xmlns:vms="clr-namespace:ProductManager.UI.ViewModels"
              x:Class="ProductManager.UI.Pages.WarehousesPage"
+             x:DataType="vms:WarehousesViewModel"
              Title="Управління складами" 
              BackgroundColor="#E9ECEF"
-             Shell.BackgroundColor="#E9ECEF">
+             IsEnabled="{Binding IsNotBusy}">
 
     <ContentPage.Resources>
         <conv:EnumToDisplayNameConverter x:Key="EnumConverter" />
     </ContentPage.Resources>
 
-    <VerticalStackLayout Padding="20" Spacing="15" MaximumWidthRequest="600" HorizontalOptions="Center">
-        <Label Text="Список доступних складів" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-        <CollectionView ItemsSource="{Binding Warehouses}" 
-                        SelectedItem="{Binding SelectedWarehouse, Mode=TwoWay}" 
-                        SelectionMode="Single">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Vertical" ItemSpacing="15" />
-            </CollectionView.ItemsLayout>
+        <VerticalStackLayout Grid.Row="0" Spacing="10" Margin="20,20,20,10">
+            <Label Text="Список доступних складів" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Margin="0" Padding="15" CornerRadius="15" HasShadow="True" BackgroundColor="#C7EBFF">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" TextColor="#2C3E50" />
-                            <Label Text="{Binding Location, Converter={StaticResource EnumConverter}, StringFormat='Локація: {0}'}" FontSize="14" TextColor="#7F8C8D" Margin="0,5,0,0" />
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </VerticalStackLayout>
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                <SearchBar Grid.Column="0" Placeholder="Пошук складів..." Text="{Binding SearchText}" BackgroundColor="White" />
+                <Picker Grid.Column="1" ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SelectedSortOption}" BackgroundColor="White" WidthRequest="150" />
+            </Grid>
+        </VerticalStackLayout>
+
+        <RefreshView Grid.Row="1" Command="{Binding RefreshDataCommand}">
+            <CollectionView ItemsSource="{Binding Warehouses}" SelectionMode="None" Margin="20,0">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="15" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:WarehouseListDTO">
+                        <Frame Margin="0" Padding="15" CornerRadius="15" HasShadow="True" BackgroundColor="#C7EBFF">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vms:WarehousesViewModel}}, Path=GotoWarehouseDetailsCommand}" CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10">
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" TextColor="#2C3E50" />
+                                    <Label Text="{Binding Location, Converter={StaticResource EnumConverter}, StringFormat='Локація: {0}'}" FontSize="14" TextColor="#7F8C8D" />
+                                </VerticalStackLayout>
+
+                                <Button Grid.Column="1" Text="✎" BackgroundColor="#F39C12" TextColor="White" FontAttributes="Bold" CornerRadius="8" WidthRequest="45"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vms:WarehousesViewModel}}, Path=EditWarehouseCommand}" CommandParameter="{Binding .}"/>
+
+                                <Button Grid.Column="2" Text="X" BackgroundColor="#E74C3C" TextColor="White" FontAttributes="Bold" CornerRadius="8" WidthRequest="45"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vms:WarehousesViewModel}}, Path=DeleteWarehouseCommand}" CommandParameter="{Binding .}"/>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <Button Grid.Row="2" Command="{Binding AddWarehouseCommand}" Text="Додати новий склад" Margin="20" CornerRadius="10" />
+
+        <BoxView Grid.RowSpan="3" IsVisible="{Binding IsBusy}" BackgroundColor="Gray" Opacity="0.2" InputTransparent="False" />
+        <ActivityIndicator Grid.RowSpan="3" Color="#0080FF" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+    </Grid>
 </ContentPage>

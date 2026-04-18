@@ -7,14 +7,17 @@ using ProductManager.DBModels;
 
 namespace ProductManager.Storage
 {
+    // Використовується для початкового заповнення бази даних SQLite та тестування.
     public class InMemoryStorageContext : IStorageContext
     {
+        // Внутрішні записи для представлення даних у пам'яті
         private record class WarehouseRecord(Guid Id, string Name, Location Location);
         private record class ProductRecord(Guid Id, Guid WarehouseId, string Name, int Quantity, decimal Price, ProductCategory Category, string Description);
-
+        // Статичні списки для імітації таблиць бази даних
         private static readonly List<WarehouseRecord> _warehouses = new List<WarehouseRecord>();
         private static readonly List<ProductRecord> _products = new List<ProductRecord>();
 
+        // Статичний конструктор для ініціалізації початкових даних.
         static InMemoryStorageContext()
         {
             var mainWarehouse = new WarehouseRecord(Guid.NewGuid(), "Головний склад", Location.Kyiv);
@@ -36,15 +39,18 @@ namespace ProductManager.Storage
             _products.Add(new ProductRecord(Guid.NewGuid(), thirdWarehouse.Id, "Кава в зернах", 100, 450m, ProductCategory.Groceries, "Арабіка 100%"));
         }
 
+        // Повертає асинхронний потік усіх складів.
         public async IAsyncEnumerable<WarehouseDBModel> GetAllWarehousesAsync()
         {
             foreach (var w in _warehouses)
             {
+                // Імітація затримки мережі або доступу до диска
                 await Task.Delay(100);
                 yield return new WarehouseDBModel { Id = w.Id, Name = w.Name, Location = w.Location };
             }
         }
 
+        // Отримує конкретний склад за його ідентифікатором.
         public Task<WarehouseDBModel> GetWarehouseAsync(Guid warehouseId)
         {
             return Task.Run(() =>
@@ -54,6 +60,7 @@ namespace ProductManager.Storage
             });
         }
 
+        // Повертає список товарів, що належать конкретному складу.
         public Task<IEnumerable<ProductDBModel>> GetProductsByWarehouseAsync(Guid warehouseId)
         {
             return Task.Run(() =>
@@ -64,6 +71,7 @@ namespace ProductManager.Storage
             });
         }
 
+        // Отримує детальну інформацію про товар за його ID.
         public Task<ProductDBModel> GetProductAsync(Guid productId)
         {
             return Task.Run(() =>
@@ -73,6 +81,7 @@ namespace ProductManager.Storage
             });
         }
 
+       
         public Task AddWarehouseAsync(WarehouseDBModel warehouse) => throw new NotImplementedException();
         public Task UpdateWarehouseAsync(WarehouseDBModel warehouse) => throw new NotImplementedException();
         public Task DeleteWarehouseAsync(Guid warehouseId) => throw new NotImplementedException();

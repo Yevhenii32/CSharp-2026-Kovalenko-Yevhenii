@@ -1,4 +1,4 @@
-﻿using SQLite;
+﻿using SQLite; 
 using System;
 
 namespace ProductManager.DBModels
@@ -7,6 +7,7 @@ namespace ProductManager.DBModels
     {
         [PrimaryKey] 
         public Guid Id { get; set; }
+
         public Guid WarehouseId { get; set; }
         public string Name { get; set; }
         public int Quantity { get; set; }
@@ -14,11 +15,9 @@ namespace ProductManager.DBModels
         public ProductCategory Category { get; set; }
         public string Description { get; set; }
 
-        public ProductDBModel()
-        {
-        }
+        // Порожній конструктор
+        public ProductDBModel() { }
 
-        // Конструктор для створення нових товарів вручну
         public ProductDBModel(Guid warehouseId, string name, int quantity, decimal price, ProductCategory category, string description)
         {
             Id = Guid.NewGuid();

@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Linq; 
 using ProductManager.DBModels;
 
 namespace ProductManager.Storage
 {
     public class SQLiteStorageContext : IStorageContext
     {
-        private const string DatabaseFileName = "product_manager.db3";
+        private const string DatabaseFileName = "product_manager_final_v5.db3"; // Змінено версію для "чистого" старту
         private static readonly string DatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DB storage", DatabaseFileName);
         private SQLiteAsyncConnection _databaseConnection;
 
@@ -18,39 +19,54 @@ namespace ProductManager.Storage
             if (_databaseConnection is not null)
                 return;
 
-            bool isFirstLaunch = !File.Exists(DatabasePath);
-
-            if (isFirstLaunch)
-                await CreateMockStorage();
-            else
-                _databaseConnection = new SQLiteAsyncConnection(DatabasePath);
-        }
-
-        private async Task CreateMockStorage()
-        {
             var directory = Path.GetDirectoryName(DatabasePath);
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
             _databaseConnection = new SQLiteAsyncConnection(DatabasePath);
-            var inMemoryStorage = new InMemoryStorageContext();
 
+            // Створюємо таблиці
             await _databaseConnection.CreateTableAsync<WarehouseDBModel>();
             await _databaseConnection.CreateTableAsync<ProductDBModel>();
 
-            // Завантажуємо дані з InMemoryStorage в SQLite
-            await foreach (var warehouse in inMemoryStorage.GetAllWarehousesAsync())
+            // Перевіряємо, чи база порожня
+            var count = await _databaseConnection.Table<WarehouseDBModel>().CountAsync();
+            if (count == 0)
             {
-                await _databaseConnection.InsertAsync(warehouse);
-                var products = await inMemoryStorage.GetProductsByWarehouseAsync(warehouse.Id);
-                await _databaseConnection.InsertAllAsync(products);
+                await CreateMockStorage();
+            }
+        }
+
+        private async Task CreateMockStorage()
+        {
+            var inMemoryStorage = new InMemoryStorageContext();
+            var warehouses = new List<WarehouseDBModel>();
+
+            await foreach (var w in inMemoryStorage.GetAllWarehousesAsync())
+            {
+                warehouses.Add(w);
+            }
+
+            if (warehouses.Any())
+            {
+                await _databaseConnection.InsertAllAsync(warehouses);
+
+                foreach (var warehouse in warehouses)
+                {
+                    var products = await inMemoryStorage.GetProductsByWarehouseAsync(warehouse.Id);
+                    if (products != null && products.Any())
+                    {
+                        await _databaseConnection.InsertAllAsync(products);
+                    }
+                }
             }
         }
 
         public async IAsyncEnumerable<WarehouseDBModel> GetAllWarehousesAsync()
         {
             await Init();
-            foreach (var warehouse in await _databaseConnection.Table<WarehouseDBModel>().ToListAsync())
+            var list = await _databaseConnection.Table<WarehouseDBModel>().ToListAsync();
+            foreach (var warehouse in list)
             {
                 yield return warehouse;
             }
